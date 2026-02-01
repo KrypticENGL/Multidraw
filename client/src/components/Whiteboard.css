@@ -1,0 +1,275 @@
+.whiteboard-container {
+    width: 100vw;
+    height: 100vh;
+    background-color: #1c1c1c;
+    background-image: radial-gradient(rgba(255, 119, 0, 0.2) 2px, transparent 1px);
+    background-size: 30px 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.canvas-stage {
+    cursor: crosshair;
+}
+
+/* Fade-Zoom Animation */
+.water-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, rgba(255, 119, 0, 0.4) 0%, rgba(255, 119, 0, 0.1) 100%);
+    z-index: 9999;
+    pointer-events: none;
+    animation: fadeZoom 1.2s ease-out forwards;
+}
+
+@keyframes fadeZoom {
+    0% {
+        opacity: 1;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+/* Back Button */
+.back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    z-index: 1000;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.back-btn:hover {
+    background: rgba(255, 119, 0, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 119, 0, 0.3);
+}
+
+/* Status Bar */
+.status-bar {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    z-index: 1000;
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #666;
+    animation: pulse 2s infinite;
+}
+
+.connection-status.connected .status-dot {
+    background: #4caf50;
+}
+
+.connection-status.connecting .status-dot {
+    background: #ff9800;
+}
+
+.connection-status.disconnected .status-dot {
+    background: #f44336;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.active-users {
+    padding: 8px 15px;
+    background: rgba(255, 119, 0, 0.9);
+    border-radius: 20px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+
+/* Toolbar */
+.toolbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 25px;
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 50px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.tool-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tool-section:last-child {
+    border-right: none;
+}
+
+.tool-section label {
+    color: #ccc;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.tool-btn {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.tool-btn:hover {
+    border-color: rgba(255, 119, 0, 0.8);
+    background: rgba(255, 119, 0, 0.2);
+}
+
+.tool-btn.active {
+    background: rgba(255, 119, 0, 0.9);
+    border-color: rgba(255, 119, 0, 1);
+}
+
+.color-picker {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.stroke-slider {
+    width: 100px;
+    cursor: pointer;
+}
+
+.stroke-value {
+    color: white;
+    font-size: 0.85rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.clear-btn {
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.clear-btn:hover {
+    background: rgba(220, 53, 69, 1);
+    transform: scale(1.05);
+}
+
+/* Room Key Display */
+.room-key-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(255, 119, 0, 0.3);
+    border-radius: 25px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.room-key-label {
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.room-key-value {
+    color: rgba(255, 119, 0, 1);
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    padding: 4px 10px;
+    background: rgba(255, 119, 0, 0.1);
+    border-radius: 8px;
+}
+
+.copy-key-btn {
+    background: rgba(255, 119, 0, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 119, 0, 0.5);
+    padding: 6px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.copy-key-btn:hover {
+    background: rgba(255, 119, 0, 0.9);
+    border-color: rgba(255, 119, 0, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(255, 119, 0, 0.3);
+}

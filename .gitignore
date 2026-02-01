@@ -1,0 +1,83 @@
+# ==========================================
+# SENSITIVE FILES (API Keys, Credentials)
+# ==========================================
+
+# Environment variables - CRITICAL: Contains API keys, database URLs, secrets
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# Specific environment files in subdirectories
+client/.env
+client/.env.*
+server/.env
+server/.env.*
+
+# Config files that may contain secrets
+config.local.js
+config.local.json
+secrets.json
+*.secret.js
+*.secret.json
+
+# Firebase or other service account keys
+**/firebase-config.js
+**/serviceAccountKey.json
+**/firebase-adminsdk-*.json
+
+# DEPENDENCIES
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.pnp
+.pnp.js
+
+# BUILD OUTPUTS
+dist/
+build/
+out/
+.next/
+.nuxt/
+*.log
+
+# IDE AND EDITOR FILES
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS FILES
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# LOGS
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# TESTING
+coverage/
+.nyc_output/
+*.lcov
+
+# MISC
+.cache/
+.temp/
+.tmp/
+*.pid
+*.seed
+*.pid.lock
+.eslintcache
