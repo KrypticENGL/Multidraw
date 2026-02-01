@@ -224,6 +224,17 @@
     justify-content: center;
     z-index: 2000;
     backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-content {
@@ -234,6 +245,19 @@
     width: 90%;
     max-width: 450px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .modal-content h2 {
@@ -247,6 +271,17 @@
     color: #999;
     margin: 0 0 25px 0;
     font-size: 0.95rem;
+}
+
+.join-error {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.5);
+    border-radius: 10px;
+    padding: 12px 15px;
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .room-input {

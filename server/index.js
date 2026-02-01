@@ -32,17 +32,47 @@ app.get('/api/whiteboards', async (req, res) => {
   }
 });
 
+// Check if whiteboard exists (used before WebSocket connection)
+app.get('/api/whiteboards/:roomId/exists', async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const exists = await Whiteboard.findOne({ roomId });
+    if (exists) {
+      res.json({ exists: true, whiteboard: exists });
+    } else {
+      res.status(404).json({ exists: false, error: 'Whiteboard not found' });
+    }
+  } catch (err) {
+    console.error('Error checking whiteboard:', err);
+    res.status(500).json({ error: 'Failed to check whiteboard' });
+  }
+});
+
 app.post('/api/whiteboards', async (req, res) => {
   try {
     const { roomId, name, ownerId } = req.body;
+
+    // Validate required fields
     if (!roomId || !ownerId) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: 'Missing required fields: roomId and ownerId are required' });
     }
+
+    // Check if whiteboard already exists
+    const existing = await Whiteboard.findOne({ roomId });
+    if (existing) {
+      return res.status(409).json({ error: 'Whiteboard with this roomId already exists' });
+    }
+
     const newBoard = await Whiteboard.create({ roomId, name, ownerId });
     res.status(201).json(newBoard);
   } catch (err) {
     console.error('Error creating whiteboard:', err);
-    res.status(500).json({ error: 'Failed to create whiteboard' });
+    if (err.code === 11000) {
+      // Duplicate key error
+      res.status(409).json({ error: 'Whiteboard with this roomId already exists' });
+    } else {
+      res.status(500).json({ error: 'Failed to create whiteboard' });
+    }
   }
 });
 
@@ -51,11 +81,17 @@ app.put('/api/whiteboards/:roomId', async (req, res) => {
   try {
     const { roomId } = req.params;
     const { thumbnail } = req.body;
+
     const updated = await Whiteboard.findOneAndUpdate(
       { roomId },
       { thumbnail },
       { new: true }
     );
+
+    if (!updated) {
+      return res.status(404).json({ error: 'Whiteboard not found' });
+    }
+
     res.json(updated);
   } catch (err) {
     console.error('Error updating whiteboard:', err);
@@ -67,12 +103,21 @@ app.put('/api/whiteboards/:roomId', async (req, res) => {
 app.delete('/api/whiteboards/:roomId', async (req, res) => {
   try {
     const { roomId } = req.params;
+
+    // Check if whiteboard exists
+    const whiteboard = await Whiteboard.findOne({ roomId });
+    if (!whiteboard) {
+      return res.status(404).json({ error: 'Whiteboard not found' });
+    }
+
     await Whiteboard.deleteOne({ roomId });
-    // access the native mongo driver to delete from yjs collection
+
+    // Delete from yjs collection
     if (mongoose.connection.db) {
       await mongoose.connection.db.collection('yjs-transactions').deleteMany({ docName: roomId });
     }
-    res.json({ message: 'Whiteboard deleted' });
+
+    res.json({ message: 'Whiteboard deleted successfully' });
   } catch (err) {
     console.error('Error deleting whiteboard:', err);
     res.status(500).json({ error: 'Failed to delete whiteboard' });
@@ -107,15 +152,15 @@ if (process.env.MONGO_URI) {
         mdb.storeUpdate(docName, newUpdates);
         Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
 
-        // Ensure metadata exists
+        // Check if whiteboard exists (no auto-creation)
         try {
           const exists = await Whiteboard.findOne({ roomId: docName });
           if (!exists) {
-            const name = docName.startsWith('room-') ? 'Untitled Whiteboard' : docName;
-            await Whiteboard.create({ roomId: docName, name });
+            console.warn(`Warning: WebSocket connection to non-existent whiteboard: ${docName}`);
+            // Don't auto-create - whiteboard must be created through API first
           }
         } catch (err) {
-          console.error('Metadata creation error:', err);
+          console.error('Error checking whiteboard metadata:', err);
         }
       },
       writeState: async (docName, ydoc) => {

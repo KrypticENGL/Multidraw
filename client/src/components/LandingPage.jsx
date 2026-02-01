@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
+import { FaUserSecret } from "react-icons/fa";
 import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     signInWithPopup,
-    GoogleAuthProvider,
-    GithubAuthProvider
+    signInAnonymously,
+    updateProfile,
+    GoogleAuthProvider
 } from "firebase/auth";
 import { auth } from '../firebase';
 import './LandingPage.css';
@@ -47,13 +48,32 @@ const LandingPage = () => {
         setError('');
         let provider;
         if (providerName === 'google') provider = new GoogleAuthProvider();
-        if (providerName === 'github') provider = new GithubAuthProvider();
 
         try {
             await signInWithPopup(auth, provider);
             navigate('/home');
         } catch (err) {
             setError(`Failed to login with ${providerName}.`);
+            console.error(err);
+        }
+    };
+
+    const handleAnonymousLogin = async () => {
+        setError('');
+        try {
+            const result = await signInAnonymously(auth);
+            // Generate random guest name
+            const randomNumber = Math.floor(Math.random() * 9999);
+            const guestName = `Guest_${randomNumber}`;
+
+            // Update the user's display name
+            await updateProfile(result.user, {
+                displayName: guestName
+            });
+
+            navigate('/home');
+        } catch (err) {
+            setError('Failed to sign in anonymously.');
             console.error(err);
         }
     };
@@ -116,8 +136,8 @@ const LandingPage = () => {
                                 <button type="button" className="social-btn" onClick={() => handleSocialLogin('google')}>
                                     <FcGoogle size={24} /> Google
                                 </button>
-                                <button type="button" className="social-btn" onClick={() => handleSocialLogin('github')}>
-                                    <FaGithub size={24} /> Github
+                                <button type="button" className="social-btn guest-btn" onClick={handleAnonymousLogin}>
+                                    <FaUserSecret size={24} /> Continue as Guest
                                 </button>
                             </div>
                         </form>

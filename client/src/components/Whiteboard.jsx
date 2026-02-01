@@ -5,6 +5,7 @@ import { FiArrowLeft, FiEdit2 } from 'react-icons/fi';
 import { BsEraserFill } from 'react-icons/bs';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
+import { auth } from '../firebase';
 import './Whiteboard.css';
 
 const Whiteboard = () => {
@@ -17,6 +18,7 @@ const Whiteboard = () => {
     const [connectionStatus, setConnectionStatus] = useState('connecting');
     const [activeUsers, setActiveUsers] = useState(0);
     const [copied, setCopied] = useState(false);
+    const [user, setUser] = useState(null);
 
     const isDrawing = useRef(false);
     const ydocRef = useRef(null);
@@ -39,9 +41,7 @@ const Whiteboard = () => {
         undoManagerRef.current = undoManager;
 
         // Connect to WebSocket server
-        const serverUrl = import.meta.env.VITE_SERVER_URL
-            ? import.meta.env.VITE_SERVER_URL
-            : 'ws://localhost:3002';
+        const serverUrl = import.meta.env.VITE_WEBSOCKET_URL || 'ws://localhost:3002';
 
         const provider = new WebsocketProvider(serverUrl, id, ydoc);
         providerRef.current = provider;
@@ -80,6 +80,14 @@ const Whiteboard = () => {
             ydoc.destroy();
         };
     }, [id]);
+
+    // Listen for auth state changes
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+            setUser(currentUser);
+        });
+        return () => unsubscribe();
+    }, []);
 
     // Keyboard Shortcuts
     useEffect(() => {
@@ -267,15 +275,24 @@ const Whiteboard = () => {
 
             {/* Room Key Display */}
             <div className="room-key-container">
-                <div className="room-key-label">Room Key:</div>
-                <div className="room-key-value">{id}</div>
-                <button
-                    className="copy-key-btn"
-                    onClick={handleCopyRoomKey}
-                    title="Copy room key"
-                >
-                    {copied ? '✓ Copied!' : 'Copy'}
-                </button>
+                {user?.isAnonymous ? (
+                    <>
+                        <div className="room-key-label">Room Key:</div>
+                        <div className="room-key-message">You need to have an account for getting room key</div>
+                    </>
+                ) : (
+                    <>
+                        <div className="room-key-label">Room Key:</div>
+                        <div className="room-key-value">{id}</div>
+                        <button
+                            className="copy-key-btn"
+                            onClick={handleCopyRoomKey}
+                            title="Copy room key"
+                        >
+                            {copied ? '✓ Copied!' : 'Copy'}
+                        </button>
+                    </>
+                )}
             </div>
         </div>
     );
