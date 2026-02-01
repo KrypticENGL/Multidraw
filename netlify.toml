@@ -1,8 +1,7 @@
 # Netlify Configuration for Multidraw Client
 
 [build]
-  # Base directory where the client code is located
-  base = "client"
+  base = "/"
   
   # Build command to run
   command = "npm run build"
@@ -15,13 +14,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Environment variables (Set these in Netlify UI: Site settings > Environment variables)
-# VITE_BACKEND_URL - Your backend URL (e.g., https://your-backend.render.com)
-# VITE_WEBSOCKET_URL - Your WebSocket URL (e.g., wss://your-backend.render.com)
-# VITE_FIREBASE_API_KEY
-# VITE_FIREBASE_AUTH_DOMAIN
-# VITE_FIREBASE_PROJECT_ID
-# VITE_FIREBASE_STORAGE_BUCKET
-# VITE_FIREBASE_MESSAGING_SENDER_ID
-# VITE_FIREBASE_APP_ID
